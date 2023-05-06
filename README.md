@@ -10,9 +10,9 @@ Fastest image quadtree stylization implementation to date, capable of hundreds o
 
 [简体中文](./README.zh-Hans.md)
 
-## Installation: Just run **`cargo install --bin quadim`**.
+## Installation: Run **`cargo install quadim -F build-bin`**
 
-*(Sorry I can't provide binaries.)*
+*(Sorry I can't provide binaries)*
 
 ## Usage & Gallery
 

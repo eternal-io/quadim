@@ -10,9 +10,11 @@
 
 ## 安装
 
-请：**`cargo install --bin quadim`**。
+1. 安装 [rustup](https://www.rust-lang.org/zh-CN/tools/install)。
+2. 安装 [MSVC](https://visualstudio.microsoft.com/zh-hans/visual-cpp-build-tools/)。
+3. 打开命令行，运行：**`cargo install quadim -F build-bin`**，听着散热器的嗡嗡声，几分钟就好了。
 
-为什么不直接提供二进制文件？
+### 为什么不直接提供二进制文件？
 
 - 高情商：为了防止滥用
 - 低情商：能力有限 (￣▽￣)"
