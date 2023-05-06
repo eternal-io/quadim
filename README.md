@@ -39,16 +39,13 @@ Fastest image quadtree stylization implementation to date, capable of hundreds o
       -r, --ratio <SLICING_RATIO>        Specifies how to slice the image into sub-blocks [default: 1:1]
       -d, --depth <MAX_DEPTH>            The maximum depth of the quadtree [default: 8]
       -Y, --thres-ay <THRES_AY>          Thresholding on Alpha and Luma channels [default: 20]
-      -C, --thres-cbcr <THRES_CBCR>      Thresholding on the other two Chrominance channels.
-    Notice! The tests are performed sequentially! [default: 2]
+      -C, --thres-cbcr <THRES_CBCR>      Thresholding on the other two Chrominance channels. Notice! The tests are performed sequentially! [default: 2]
           --merge <MERGE_METHOD>         Specifies the algorithm to use for merging tests [default: st-dev] [possible values: range, st-dev]
-      -s, --shape <BRUSH>                Specifies the shape used to depict each node on the
-    quadtree [default: rect] [possible values: rect, circle, cross]
+      -s, --shape <BRUSH>                Specifies the shape used to depict each node on the quadtree [default: rect] [possible values: rect, circle, cross]
       -B, --bg-color <BG_COLOR>          The background color of the fill (if required) [default: white]
       -S, --stroke-color <STROKE_COLOR>  The color of the stroke [default: black]
       -W, --stroke-width <STROKE_WIDTH>  The width of the stroke [default: 0]
-      -P, --parallel <PARALLELISM>       Specifies the number of threads to use. The default
-    is the number of CPU logical cores
+      -P, --parallel <PARALLELISM>       Specifies the number of threads to use. The default is the number of CPU logical cores
           --buffer <BUFFER_SIZE>         The size of the buffer [default: 33177600]
           --errors <MAX_ERRORS>          Error count, when this many errors have occurred, Quadim will terminate early [default: 5]
       -h, --help                         Print help (see more with '--help')
