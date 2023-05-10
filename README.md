@@ -10,6 +10,15 @@ Fastest image quadtree stylization implementation to date, capable of hundreds o
 
 [简体中文](./README.zh-Hans.md)
 
+<details><summary>如果你是从B站来的……</summary>
+<br />
+“Listen to the wind, the wind is surging, here is not a place to stay ...”
+
+“翻译：我确信我想到了一条美妙的评论，可惜这里的空白处太小，只有动态里才写得下。”
+
+—— 复制自我原本发送并从未删除的评论。
+</details>
+
 ## Installation: Run **`cargo install quadim -F build-bin`**
 
 *(Sorry I can't provide binaries)*
