@@ -10,7 +10,7 @@ Fastest image quadtree stylization implementation to date, capable of hundreds o
 
 [简体中文](./README.zh-Hans.md)
 
-> **喜讯：0.1.1 <mark>“云南菌子”笔刷</mark> 已发布！详见[CHANGELOG](./CHANGELOG.zh-Hans.md)。**
+> **喜讯：0.1.1“云南菌子”笔刷已发布！详见[CHANGELOG](./CHANGELOG.zh-Hans.md)。**
 >
 > *但可惜，我已经没有时间将Quadim集成到OBS里了。这个任务就交给你们了！*
 

@@ -8,7 +8,7 @@
 
     <table style="table-layout:fixed;width:100%;"><tr>
         <th>Original</th>
-        <th><code>--shape yr-add --thres-ay 10<br />--depth 5 --bg-color BBB --stroke-width 6</code></th>
+        <th><code>--shape yr-add --thres-ay 10 --depth 5 --bg-color BBB --stroke-width 6</code></th>
         <th><code>--shape yr-mul --thres-ay 10 --depth 6</code></th>
     </tr><tr>
         <td><img src="./img/v0.1.1/raw.jpg" /></td>
