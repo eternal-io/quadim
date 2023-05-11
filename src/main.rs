@@ -79,27 +79,25 @@ struct Args {
     #[arg(short = 'W', long, default_value_t = 0)]
     stroke_width: u32,
 
+    /// Make your brushes change over time!
+    #[arg(long = "fps", value_parser = Self::parse_framerate, default_value_t = 30.)]
+    framerate: f32,
+
     /// (reserved)
     ///
     /// 自定义笔刷的随机数种子。
     #[arg(hide = true, long, default_value_t = 0)]
     seed: u64,
 
-    /// (reserved)
-    ///
-    /// 让自定义笔刷可以基于时间变化。
-    #[arg(hide = true, long = "fps", value_parser = Self::parse_framerate, default_value_t = 25.)]
-    framerate: f32,
-
     /* ----- 杂项 ----- */
     /// Specifies the number of threads to use. The default is the number of CPU logical cores.
     #[arg(short = 'P', long = "parallel")]
     parallelism: Option<usize>,
-    /// The size of the buffer.
+    /// The size of the buffer. 7680×4320 for single process and 1920×1080 for batch process.
     ///
     /// If there is an error of `ImageTooLarge`, try to increase this value.
-    #[arg(long = "buffer", default_value_t = 7680 * 4320)]
-    buffer_size: usize,
+    #[arg(long = "buffer")]
+    buffer_size: Option<usize>,
     /// Error count, when this many errors have occurred, Quadim will terminate early.
     #[arg(long = "errors", value_parser = Self::parse_errth, default_value_t = 5)]
     max_errors: usize,
@@ -211,10 +209,17 @@ fn main() {
             None => num_cpus::get(),
         },
     };
+    let buffer_size = match args.buffer_size {
+        Some(n) => n,
+        None => match sdpairs.is_batch() {
+            true => 1920 * 1080,
+            false => 7680 * 4320,
+        },
+    };
 
     let thread_pool = ThreadPool::new(num_threads);
     let canvas_pool = Arc::new(Pool::<Box<[CanvasPixel]>>::new(num_threads, || {
-        vec![(0u8, SampleType::zeros()); *&args.buffer_size].into_boxed_slice()
+        vec![(0u8, SampleType::zeros()); buffer_size].into_boxed_slice()
     }));
 
     fn worker(

@@ -1,6 +1,6 @@
 [package]
 name = "quadim"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 
 description = "Fastest image quadtree stylization implementation to date, capable of hundreds of fps and avoiding ugly non-squares."

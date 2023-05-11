@@ -136,6 +136,8 @@ pub enum ClassicBrush {
     Rect,
     Circle,
     Cross,
+    YrAdd,
+    YrMul,
 }
 
 impl Brush for ClassicBrush {
@@ -150,8 +152,8 @@ impl Brush for ClassicBrush {
         }: RenderParams,
         (sx, sy): (u32, u32),
         (w, h): (u32, u32),
-        _time_elapsed: f32,
-        _now_depth: u8,
+        time_elapsed: f32,
+        now_depth: u8,
         color: PixelType,
     ) {
         use imageproc::{drawing::*, rect::Rect};
@@ -159,48 +161,113 @@ impl Brush for ClassicBrush {
         let (sx, sy) = (sx as i32, sy as i32);
         let with_stroke = stroke_width > 0;
 
-        if *self == ClassicBrush::Rect {
-            let rect = Rect::at(sx, sy).of_size(w, h);
+        fn draw_rect_inner_stroke(
+            img: &mut ImageType,
+            (sx, sy): (i32, i32),
+            (w, h): (u32, u32),
+            stroke_width: u32,
+            color: PixelType,
+        ) {
+            if stroke_width >= w.min(h) {
+                draw_filled_rect_mut(img, Rect::at(sx, sy).of_size(w, h), color);
+                return;
+            }
+            let se = stroke_width >> 1;
+            let ss = se + (stroke_width & 1);
 
-            draw_filled_rect_mut(img, rect, color);
+            /*
+            ,-----------= sx
+            | ,---------= sx + ss
+            | |     ,---= sx + w - se
+            | |     | ,-= sx + w
+            v v     v v
+            ,-+--1--+-. = sy
+            |-|-----|-| = sy + ss
+            |2|     |4|
+            |-|-----|-| = sy + h - se
+            `-+--3--+-' = sy + h
+            */
 
-            if with_stroke {
+            draw_filled_rect_mut(img, Rect::at(sx, sy).of_size(w, ss), color);
+            draw_filled_rect_mut(img, Rect::at(sx, sy).of_size(ss, h), color);
+            if se > 0 {
                 draw_filled_rect_mut(
                     img,
-                    Rect::at(sx, sy).of_size(w, stroke_width.min(h)),
-                    stroke_color,
+                    Rect::at(sx, sy + h as i32 - se as i32).of_size(w, se),
+                    color,
                 );
                 draw_filled_rect_mut(
                     img,
-                    Rect::at(sx, sy).of_size(stroke_width.min(w), h),
-                    stroke_color,
+                    Rect::at(sx + w as i32 - se as i32, sy).of_size(se, h),
+                    color,
                 );
             }
-        } else {
-            let (rw, rh) = (w as i32 >> 1, h as i32 >> 1);
-            match self {
-                ClassicBrush::Circle => {
-                    let center = (sx + rw, sy + rh);
-                    draw_filled_ellipse_mut(img, center, rw, rh, color);
-                    if with_stroke {
-                        draw_hollow_ellipse_mut(img, center, rw, rh, stroke_color);
-                    }
+        }
+
+        match self {
+            ClassicBrush::Rect => {
+                draw_filled_rect_mut(img, Rect::at(sx, sy).of_size(w, h), color);
+                if with_stroke {
+                    draw_rect_inner_stroke(img, (sx, sy), (w, h), stroke_width, stroke_color);
                 }
-                ClassicBrush::Cross => {
-                    let stroke_width = stroke_width.max(1);
-                    let (cx, cy) = (
-                        sx + (w.saturating_sub(stroke_width) >> 1) as i32,
-                        sy + (h.saturating_sub(stroke_width) >> 1) as i32,
-                    );
-                    draw_filled_rect_mut(img, Rect::at(sx, cy).of_size(w, stroke_width), color);
-                    draw_filled_rect_mut(img, Rect::at(cx, sy).of_size(stroke_width, h), color);
-                }
-                ClassicBrush::Rect => unreachable!(),
             }
+            ClassicBrush::Circle => {
+                let (rw, rh) = (w as i32 >> 1, h as i32 >> 1);
+                let center = (sx + rw, sy + rh);
+                draw_filled_ellipse_mut(img, center, rw, rh, color);
+                if with_stroke {
+                    draw_hollow_ellipse_mut(img, center, rw, rh, stroke_color);
+                }
+            }
+            ClassicBrush::Cross => {
+                let stroke_width = stroke_width.max(1);
+                let (cx, cy) = (
+                    sx + (w.saturating_sub(stroke_width) >> 1) as i32,
+                    sy + (h.saturating_sub(stroke_width) >> 1) as i32,
+                );
+                draw_filled_rect_mut(img, Rect::at(sx, cy).of_size(w, stroke_width), color);
+                draw_filled_rect_mut(img, Rect::at(cx, sy).of_size(stroke_width, h), color);
+            }
+            ClassicBrush::YrAdd => {
+                let hue = (sx + sy) as f64 / 8. + 360. * time_elapsed.fract() as f64;
+                let lit = 0.1
+                    + 0.13
+                        * match now_depth {
+                            n @ 1..=4 => n - 1,
+                            _ => 6,
+                        } as f64;
+                let color: PixelType = csscolorparser::Color::from_hsla(hue, 0.8, lit, 1.0)
+                    .to_rgba8()
+                    .into();
+                draw_rect_inner_stroke(img, (sx, sy), (w, h), stroke_width.max(1), color);
+            }
+            ClassicBrush::YrMul => match now_depth {
+                1..=2 => draw_filled_rect_mut(img, Rect::at(sx, sy).of_size(w, h), color),
+                n => {
+                    let hue =
+                        sx.saturating_mul(sy) as f64 / 20. + 360. * time_elapsed.fract() as f64;
+                    let lit = 0.1
+                        + 0.12
+                            * match n {
+                                3 => 2,
+                                n => n,
+                            } as f64;
+                    let color: PixelType = csscolorparser::Color::from_hsla(hue, 0.7, lit, 1.0)
+                        .to_rgba8()
+                        .into();
+                    draw_filled_rect_mut(img, Rect::at(sx, sy).of_size(w, h), color);
+                }
+            },
         }
     }
 
     fn need_background(&self) -> bool {
-        *self != Self::Rect
+        match self {
+            ClassicBrush::Rect => false,
+            ClassicBrush::Circle => true,
+            ClassicBrush::Cross => true,
+            ClassicBrush::YrAdd => true,
+            ClassicBrush::YrMul => false,
+        }
     }
 }

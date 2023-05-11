@@ -1,10 +1,10 @@
 # Quadim
 
-![](https://img.shields.io/crates/v/quadim)
-![](https://img.shields.io/crates/d/quadim)
-![](https://img.shields.io/crates/l/quadim)
-![](https://img.shields.io/docsrs/quadim)
-![](https://img.shields.io/github/stars/eternal-io/quadim?style=social)
+[![](https://img.shields.io/crates/v/quadim)](https://crates.io/crates/quadim)
+[![](https://img.shields.io/crates/d/quadim)](https://crates.io/crates/quadim)
+[![](https://img.shields.io/crates/l/quadim)](#)
+[![](https://img.shields.io/docsrs/quadim)](https://docs.rs/quadim)
+[![](https://img.shields.io/github/stars/eternal-io/quadim?style=social)](https://github.com/eternal-io/quadim)
 
 迄今为止最快的图像四叉树风格化实现，拥有上百FPS的速度并且能够避免丑陋的长方形。
 
@@ -30,8 +30,6 @@
     ```
 
 1. 然后！我！懒得写教程了！自己捣鼓玩吧～ ╰(￣ω￣ｏ)
-
-    （参看：[完整指令列表](./FULL-HELP.zh-Hans.md)）
 
 ### `quadim ./img/4~3/ -o ./img/out-4~3/ --ratio 4:3 --stroke-width 2`
 

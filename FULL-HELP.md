@@ -72,7 +72,7 @@ Options:
           Specifies the shape used to depict each node on the quadtree
 
           [default: rect]
-          [possible values: rect, circle, cross]
+          [possible values: rect, circle, cross, yr-add, yr-mul]
 
   -B, --bg-color <BG_COLOR>
           The background color of the fill (if required)
@@ -91,15 +91,18 @@ Options:
 
           [default: 0]
 
+      --fps <FRAMERATE>
+          Make your brushes change over time!
+
+          [default: 30]
+
   -P, --parallel <PARALLELISM>
           Specifies the number of threads to use. The default is the number of CPU logical cores
 
       --buffer <BUFFER_SIZE>
-          The size of the buffer.
+          The size of the buffer. 7680×4320 for single process and 1920×1080 for batch process.
 
           If there is an error of `ImageTooLarge`, try to increase this value.
-
-          [default: 33177600]
 
       --errors <MAX_ERRORS>
           Error count, when this many errors have occurred, Quadim will terminate early

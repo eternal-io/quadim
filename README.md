@@ -1,23 +1,18 @@
 # Quadim
 
-![](https://img.shields.io/crates/v/quadim)
-![](https://img.shields.io/crates/d/quadim)
-![](https://img.shields.io/crates/l/quadim)
-![](https://img.shields.io/docsrs/quadim)
-![](https://img.shields.io/github/stars/eternal-io/quadim?style=social)
+[![](https://img.shields.io/crates/v/quadim)](https://crates.io/crates/quadim)
+[![](https://img.shields.io/crates/d/quadim)](https://crates.io/crates/quadim)
+[![](https://img.shields.io/crates/l/quadim)](#)
+[![](https://img.shields.io/docsrs/quadim)](https://docs.rs/quadim)
+[![](https://img.shields.io/github/stars/eternal-io/quadim?style=social)](https://github.com/eternal-io/quadim)
 
 Fastest image quadtree stylization implementation to date, capable of hundreds of fps and avoiding ugly non-squares.
 
 [简体中文](./README.zh-Hans.md)
 
-<details><summary>如果你是从B站来的……</summary>
-<br />
-“Listen to the wind, the wind is surging, here is not a place to stay ...”
-
-“翻译：我确信我想到了一条美妙的评论，可惜这里的空白处太小，只有动态里才写得下。”
-
-—— 复制自我原本发送并从未删除的评论。
-</details>
+> **喜讯：0.1.1 <mark>“云南菌子”笔刷</mark> 已发布！详见[CHANGELOG](./CHANGELOG.zh-Hans.md)。**
+>
+> *但可惜，我已经没有时间将Quadim集成到OBS里了。这个任务就交给你们了！*
 
 ## Installation: Run **`cargo install quadim -F build-bin`**
 
@@ -50,12 +45,13 @@ Fastest image quadtree stylization implementation to date, capable of hundreds o
       -Y, --thres-ay <THRES_AY>          Thresholding on Alpha and Luma channels [default: 20]
       -C, --thres-cbcr <THRES_CBCR>      Thresholding on the other two Chrominance channels. Notice! The tests are performed sequentially! [default: 2]
           --merge <MERGE_METHOD>         Specifies the algorithm to use for merging tests [default: st-dev] [possible values: range, st-dev]
-      -s, --shape <BRUSH>                Specifies the shape used to depict each node on the quadtree [default: rect] [possible values: rect, circle, cross]
+      -s, --shape <BRUSH>                Specifies the shape used to depict each node on the quadtree [default: rect] [possible values: rect, circle, cross, yr-add, yr-mul]
       -B, --bg-color <BG_COLOR>          The background color of the fill (if required) [default: white]
       -S, --stroke-color <STROKE_COLOR>  The color of the stroke [default: black]
       -W, --stroke-width <STROKE_WIDTH>  The width of the stroke [default: 0]
+          --fps <FRAMERATE>              Make your brushes change over time! [default: 30]
       -P, --parallel <PARALLELISM>       Specifies the number of threads to use. The default is the number of CPU logical cores
-          --buffer <BUFFER_SIZE>         The size of the buffer [default: 33177600]
+          --buffer <BUFFER_SIZE>         The size of the buffer. 7680×4320 for single process and 1920×1080 for batch process
           --errors <MAX_ERRORS>          Error count, when this many errors have occurred, Quadim will terminate early [default: 5]
       -h, --help                         Print help (see more with '--help')
       -V, --version                      Print version
