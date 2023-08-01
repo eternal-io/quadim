@@ -614,6 +614,8 @@ dependencies = [
 [[package]]
 name = "kalavor"
 version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "137fa5408d87e3a3a89e4927d75468412cadfcdce3349275b27681a4119090fd"
 dependencies = [
  "chrono",
  "radix_fmt",
@@ -1228,6 +1230,8 @@ dependencies = [
 [[package]]
 name = "src-dst-clarifier"
 version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4d3fe0ae7ebc45273567c9b1be56b7531af785c6d1ab3ec4daf341776a55f86e"
 dependencies = [
  "kalavor",
  "thiserror",
