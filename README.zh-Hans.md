@@ -6,30 +6,66 @@
 [![](https://img.shields.io/docsrs/quadim)](https://docs.rs/quadim)
 [![](https://img.shields.io/github/stars/eternal-io/quadim?style=social)](https://github.com/eternal-io/quadim)
 
-迄今为止最快的图像四叉树风格化实现，拥有上百FPS的速度并且能够避免丑陋的长方形。
+迄今为止最快的图像四叉树风格化实现，拥有上每秒上百帧的处理速度并且能够避免丑陋的长方形
 
 ## 安装
 
-1. 安装 [rustup](https://www.rust-lang.org/zh-CN/tools/install)。
-2. 安装 [MSVC](https://visualstudio.microsoft.com/zh-hans/visual-cpp-build-tools/)。
-3. 打开命令行，运行：**`cargo install quadim -F build-bin`**，听着散热器的嗡嗡声，几分钟就好了。
+1. 安装 [rust](https://www.rust-lang.org/zh-CN/tools/install)
+2. 打开命令行，运行：**`cargo install quadim -F build-bin`**，听着散热器的嗡嗡声，几分钟就好了。
 
-### 为什么不直接提供二进制文件？
+## 使用前的准备
 
-- 高情商：为了防止滥用
-- 低情商：能力有限 (￣▽￣)"
+### 1.建议建立用于存放中间过程的图片的文件夹
+```
+mkdir frames #用于存放拆帧后的图片
+mkdir output #用于存放quadim处理后的图片
+```
 
-## 用法 & 展示
+### 2.如果你要对视频进行处理，请先用`FFmpeg`对视频进行拆帧处理
+```
+ffmpeg -i .\<输入文件(请自行修改)>.mp4 -q 2 .\frames\%05d.jpg
+```
 
-0. 不用担心弄乱你的 workspace！*（感谢我的另一个项目 [src-dst-clarifier](https:github.com/eternal-io/src-dst-clarifier)）*
+### 3.(举例)假如我对`frames`文件夹进行了处理
+```
+# 相关参数设置请勿照抄, 请参考下面的参数的用法和意义
+quadim .\frames\ -o .\output --ratio 13:6 --depth 10 --stroke-width 1 --fps 24 --buffer 4492800
+# 相关参数设置请勿照抄, 请参考下面的参数的用法和意义
+```
 
-    ``` shell
-    > quadim example.jpg    # 将生成类似“example.jpg-A01123-0456-0789.png”名称的文件
+### 4.最后用`FFmpeg`合并处理后的图片(请保留原始输入视频文件)
+```
+ffmpeg -framerate <帧数与原文件相同> -i .\output\%04d.png -i .\<输入文件(请自行修改)>.mp4 -map 0:v:0 -map 1:a:0 -c:v h264 -c:a copy -crf 20 .\output.mp4
+```
 
-    > quadim ./frames       # 将生成类似“frame-A01123-0456-0789”名称的目录
-    ```
+## 参数的用法和意义
 
-1. 然后！我！懒得写教程了！自己捣鼓玩吧～ ╰(￣ω￣ｏ)
+```
+使用方法: quadim.exe [参数] <输入文件路径>
+
+输入文件路径:
+  <单个图片或目录>  某个图片文件, 或者某个文件夹里的所有图片文件
+
+参数:
+  -o, --output <输出路径>             没填这个选项就会自动创建基于时间命名的输出文件夹，有填就是你指定的文件名或目录
+  -r, --ratio <分割比例>              指定按什么比例将图像切分成子块 [默认值: 1:1] (建议填输入源的分辨率比例, 如16:9等)
+  -d, --depth <分割深度>              四叉树的最大深度 [默认值: 8]
+  -Y, --thres-ay <处理阈值>           对 Alpha 和 Luma 通道的阈值处理 [默认值: 20]
+  -C, --thres-cbcr <处理阈值>         对 Cb 和 Cr 通道进行阈值处理, 注意, 测试按顺序进行 [默认值: 2]
+      --merge <合并算法>              合并测试算法 [默认值: st-dev] [可选值: range, st-dev]
+  -s, --shape <节点形状>              四叉树上每个节点的形状 [默认值: rect] [可选值: rect, circle, cross, yr-add, yr-mul]
+  -B, --bg-color <背景颜色>           填充的背景颜色(如果需要) [默认值: 白色]
+  -S, --stroke-color <分割线颜色>     分割线的颜色 [默认值: 黑色]
+  -W, --stroke-width <分割线粗细>     分割线粗细 [默认值: 0]
+      --fps <变化速率>                笔刷的变化速率 [默认值: 30] (建议填写输入源的帧率)
+  -P, --parallel <线程数量>           要使用的线程数, 默认为 CPU 线程数 (可以不用填)
+      --buffer <缓冲大小>             缓冲区大小, 如输入源分辨率为 1920x1080, 则应填数值为 1920x1080=2073600, 以此类推 (建议填写)
+      --errors <最大错误数>           最大错误数, 当出现错误次数达到最大错误数时, 程序会自动结束 [默认值: 5]
+  -h, --help                         显示帮助信息 (使用'--help'选项能查看更多)
+  -V, --version                      显示当前版本号
+```
+
+## 展示
 
 ### `quadim ./img/4~3/ -o ./img/out-4~3/ --ratio 4:3 --stroke-width 2`
 
@@ -64,7 +100,7 @@
 
 当然可以！所有东西都已经包装好了。不过需要注意的是，**目前并不提供稳定性保证**。*（因为我不知道该怎么保证 (○｀ 3′○)）*
 
-[文档](https://docs.rs/quadim)……凑合着看看吧。注意`analyze()`和`render()`这俩函数，它们既是一切。
+[文档](https://docs.rs/quadim)……凑合着看看吧。注意`analyze()`和`render()`这俩函数，它们即是一切。
 
 ## 特性列表
 
