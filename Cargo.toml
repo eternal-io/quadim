@@ -63,6 +63,9 @@ build-bin = [
 name = "quadim"
 required-features = ["build-bin"]
 
+[lib]
+name = "quadim_ffi"
+crate-type = ["cdylib"]
 
 [profile.dev]
 opt-level = 1
