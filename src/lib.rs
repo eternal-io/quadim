@@ -7,6 +7,7 @@ use thiserror::Error;
 mod analyze;
 mod render;
 mod util;
+mod ffi;
 
 use util::Tile;
 

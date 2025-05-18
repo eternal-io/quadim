@@ -271,3 +271,17 @@ impl Brush for ClassicBrush {
         }
     }
 }
+
+/// 支持从 u8 索引生成 ClassicBrush
+impl From<u8> for ClassicBrush {
+    fn from(v: u8) -> Self {
+        match v {
+            0 => ClassicBrush::Rect,
+            1 => ClassicBrush::Circle,
+            2 => ClassicBrush::Cross,
+            3 => ClassicBrush::YrAdd,
+            4 => ClassicBrush::YrMul,
+            _ => ClassicBrush::Rect,
+        }
+    }
+}
