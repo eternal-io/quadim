@@ -218,21 +218,13 @@ fn main() {
     };
 
     let thread_pool = ThreadPool::new(num_threads);
-    let canvas_pool = Arc::new(Pool::<Box<[CanvasPixel]>>::new(num_threads, || {
-        vec![(0u8, SampleType::zeros()); buffer_size].into_boxed_slice()
-    }));
 
     fn worker(
         tx: mpsc::Sender<Result<(), Box<dyn Error + Send + Sync>>>,
         (src, dst): (Src, Dst),
-        canvas_pool: Arc<Pool<Box<[CanvasPixel]>>>,
-        (ge_params, an_params, re_params, brush): (
-            GenericParams,
-            AnalyzeParams,
-            RenderParams,
-            Box<dyn Brush>,
-        ),
+        params: (GenericParams, AnalyzeParams, RenderParams, Box<dyn Brush>),
         time_elapsed: f32,
+        args_buffer: Option<usize>,
     ) {
         tx.send((|| {
             let src = match src {
@@ -245,18 +237,20 @@ fn main() {
             };
 
             let mut img = Into::<ImageType>::into(image::open(src)?.into_rgba8());
+            let (w, h) = img.dimensions();
+            let buffer_size = args_buffer.unwrap_or((w * h) as usize);
+            // eprintln!("Debug: For image {}x{}, calculated buffer size is {}", w, h, buffer_size);
+            let mut canvas: Box<[CanvasPixel]> =
+                vec![(0u8, SampleType::zeros()); buffer_size].into_boxed_slice();
 
-            let mut canvas = canvas_pool.try_pull().unwrap();
-
-            analyze(&img, &mut canvas, ge_params, an_params)?;
-            render(&mut img, &canvas, brush, ge_params, re_params, time_elapsed)?;
+            analyze(&img, &mut canvas, params.0, params.1)?;
+            render(&mut img, &canvas, params.3, params.0, params.2, time_elapsed)?;
 
             dst.set_extension("png");
             img.save(dst)?;
 
             Ok(())
-        })())
-        .unwrap();
+        })()).unwrap();
     }
 
     let t_started = Instant::now();
@@ -281,10 +275,10 @@ fn main() {
         match sdpairs.next() {
             Some(sdpair) => {
                 let tx = tx.clone();
-                let canvas_pool = canvas_pool.clone();
                 let params = args.to_params();
-                let time_elapsed = tot / fps;
-                thread_pool.execute(move || worker(tx, sdpair, canvas_pool, params, time_elapsed));
+                let time_elapsed = tot / args.framerate;
+                let args_buffer = args.buffer_size; // calculate buffer size if user didn't specify
+                thread_pool.execute(move || worker(tx, sdpair, params, time_elapsed, args_buffer));
             }
             None => {
                 thread_pool.join();
