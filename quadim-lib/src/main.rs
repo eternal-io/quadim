@@ -1,8 +1,23 @@
 use std::path::PathBuf;
 
 use clap::Parser;
+use image;
+use csscolorparser;
 
-use quadim::*;
+use quadim_core::{
+    analyze,
+    render,
+    GenericParams,
+    AnalyzeParams,
+    RenderParams,
+    MergeMethod,
+    ClassicBrush,
+    PixelType,
+    ImageType,
+    CanvasPixel,
+    SampleType,
+    Brush,
+};
 
 // 我只能把文档注释复制来复制去！！ ＞︿＜
 #[derive(Parser, Debug, Clone)]

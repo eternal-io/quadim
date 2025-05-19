@@ -1,7 +1,7 @@
 //! C ABI 层：把 quadim 封装成一个简单的 RGBA 流处理函数
 use image::ImageBuffer;
 use std::slice;
-use crate::{
+use quadim_core::{
     analyze, render, GenericParams, AnalyzeParams, RenderParams,
     MergeMethod, SampleType, Brush, ClassicBrush, PixelType, ImageType,
 };

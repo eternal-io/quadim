@@ -1,0 +1,18 @@
+[package]
+name = "quadim-ffi"
+version = "0.1.1"
+edition = "2021"
+description = "C FFI layer for quadim"
+repository = "https://github.com/eternal-io/quadim"
+license = "MIT OR Apache-2.0"
+readme = "../CRATES.IO-README.md"
+documentation = "https://docs.rs/quadim-ffi"
+
+[dependencies]
+quadim-core = { path = "../quadim-core" }
+image = "0.24.6"
+
+[lib]
+name = "quadim_ffi"
+path = "src/ffi.rs"
+crate-type = ["cdylib"]
