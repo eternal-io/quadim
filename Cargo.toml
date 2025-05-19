@@ -51,6 +51,8 @@ src-dst-clarifier = { version = "~0.2.0", optional = true }
 
 
 [features]
+# 把 build-bin 加入 default，这样 cargo build/check/run 时会默认启用
+default = ["build-bin"]
 build-bin = [
     "clap",
     "num_cpus",
@@ -60,12 +62,11 @@ build-bin = [
 ]
 
 [[bin]]
-name = "quadim"
-required-features = ["build-bin"]
+name = "quadim_cli"     # 改成一个和 lib 不冲突的名字
+path = "src/main.rs"
 
 [lib]
-name = "quadim_ffi"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [profile.dev]
 opt-level = 1
