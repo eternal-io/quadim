@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Quadim 前端界面</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        input, select, button {
+            margin: 6px 0;
+            padding: 6px;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quadim 图像风格化工具</h1>
+    <form id="quadim-form">
+        <label>图像路径：</label><br>
+        <input name="image_path" required><br>
+
+        <label>输出目录：</label><br>
+        <input name="output_dir" required><br>
+
+        <label>比例（如 1:1、16:9）：</label><br>
+        <input name="ratio" value="1:1"><br>
+
+        <label>深度：</label><br>
+        <input name="depth" type="number" value="8"><br>
+
+        <button type="submit">运行 Quadim</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('quadim-form').onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/run', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            document.getElementById('result').innerText = result.success ? "✅ 运行成功！" : ("❌ 失败：" + result.error);
+        }
+    </script>
+</body>
+</html>
