@@ -1,55 +1,179 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <title>Quadim 前端界面</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            padding: 20px;
-            background: #f5f5f5;
-        }
-        input, select, button {
-            margin: 6px 0;
-            padding: 6px;
-        }
-        #result {
-            margin-top: 20px;
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Quadim 图像风格化工具</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 14px;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .form-panel {
+      width: 50vw;
+      padding: 20px;
+      background-color: #ffffff;
+      border-right: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow-y: auto;
+    }
+
+    .form-panel h1 {
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 12px;
+      display: block;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 6px;
+      margin-top: 4px;
+      font-size: 13px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      margin-top: 16px;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    small {
+      display: block;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .preview-panel {
+      width: 50vw;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .image-section {
+      flex: 1;
+      height: 50vh;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+    }
+
+    .image-section h2 {
+      font-size: 15px;
+      margin: 0 0 6px 0;
+    }
+
+    .image-box {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #fafafa;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .image-box img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    #result {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-    <h1>Quadim 图像风格化工具</h1>
-    <form id="quadim-form">
-        <label>图像路径：</label><br>
-        <input name="image_path" required><br>
+  <div class="container">
+    <!-- 左侧：参数表单 -->
+    <form id="quadim-form" class="form-panel" enctype="multipart/form-data">
+      <h1>Quadim 风格化工具</h1>
 
-        <label>输出目录：</label><br>
-        <input name="output_dir" required><br>
+      <label>选择图像文件（jpg/png）:</label>
+      <input type="file" name="image_file" accept="image/*" required>
 
-        <label>比例（如 1:1、16:9）：</label><br>
-        <input name="ratio" value="1:1"><br>
+      <label>选择风格:</label>
+      <select id="style-select">
+        <option value="">-- 自定义参数 --</option>
+        <option value="circle-trans">🌕 圆形透明边框</option>
+        <option value="bw-block">🔲 黑白方块风格</option>
+        <option value="color-thick">🌈 彩色浓烈边框</option>
+        <option value="low-depth">🌀 低深度艺术风格</option>
+      </select>
 
-        <label>深度：</label><br>
-        <input name="depth" type="number" value="8"><br>
+      <small>⚠️ 除比例与深度外，其他参数可留空</small>
 
-        <button type="submit">运行 Quadim</button>
+      <label>比例（如 1:1、16:9）：</label>
+      <input name="ratio" value="1:1">
+
+      <label>深度：</label>
+      <input name="depth" type="number" value="8">
+
+      <label>形状：</label>
+      <input name="shape" value="">
+
+      <label>背景颜色：</label>
+      <input name="bg_color" value="">
+
+      <label>边框颜色：</label>
+      <input name="stroke_color" value="">
+
+      <label>边框宽度：</label>
+      <input name="stroke_width" type="number" value="">
+
+      <button type="submit">🚀 运行 Quadim</button>
+      <div id="result"></div>
     </form>
 
-    <div id="result"></div>
+    <!-- 右侧：预览图片 -->
+    <div class="preview-panel">
+      <div class="image-section">
+        <h2>原图</h2>
+        <div class="image-box">
+          <img id="original-image" src="" style="display: none;" alt="原始图像" />
+        </div>
+      </div>
+      <div class="image-section">
+        <h2>风格化图像</h2>
+        <div class="image-box">
+          <img id="processed-image" src="" style="display: none;" alt="风格化图像" />
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <script>
-        document.getElementById('quadim-form').onsubmit = async function(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const response = await fetch('/run', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
-            document.getElementById('result').innerText = result.success ? "✅ 运行成功！" : ("❌ 失败：" + result.error);
-        }
-    </script>
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>
