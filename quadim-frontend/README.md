@@ -48,7 +48,7 @@ quadim_frontend/
 ├── app.py                # Flask 主程序
 ├── uploads/              # 上传的原图（自动生成）
 ├── outputs/              # 生成的图像（自动生成）
-├── static/
+├── statics/
 │   └── main.js           # 前端逻辑脚本
 ├── templates/
 │   └── index.html        # 前端页面

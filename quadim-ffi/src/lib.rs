@@ -1,13 +1,10 @@
 //! C ABI 层：把 quadim 封装成一个简单的 RGBA 流处理函数
 use image::ImageBuffer;
+use quadim::*;
 use std::slice;
-use crate::{
-    analyze, render, GenericParams, AnalyzeParams, RenderParams,
-    MergeMethod, SampleType, Brush, ClassicBrush, PixelType, ImageType,
-};
 
 /// 处理一帧 RGBA u8 数据，in-out 原地处理
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn quadim_process_rgba_u8(
     data: *mut u8,
     width: u32,
@@ -28,8 +25,7 @@ pub extern "C" fn quadim_process_rgba_u8(
     }
     unsafe {
         let slice = slice::from_raw_parts_mut(data, pixels);
-        let mut img: ImageType =
-            ImageBuffer::from_raw(width, height, slice.to_vec()).unwrap();
+        let mut img: ImageType = ImageBuffer::from_raw(width, height, slice.to_vec()).unwrap();
         let mut canvas = vec![(0u8, SampleType::zeros()); buffer_size];
 
         // 参数封装
@@ -77,7 +73,7 @@ pub extern "C" fn quadim_process_rgba_u8(
 }
 
 /// 简化版接口：只传 data/width/height/size，其他都用默认 CLI 参数
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn quadim_process_rgba_u8_default(
     data: *mut u8,
     width: u32,
@@ -94,8 +90,16 @@ pub extern "C" fn quadim_process_rgba_u8_default(
     const SHAPE: u32 = 0;
 
     quadim_process_rgba_u8(
-        data, width, height, buffer_size,
-        RATIO_W, RATIO_H, MAX_DEPTH,
-        THRES_AY, THRES_CBCR, MERGE_METHOD, SHAPE,
+        data,
+        width,
+        height,
+        buffer_size,
+        RATIO_W,
+        RATIO_H,
+        MAX_DEPTH,
+        THRES_AY,
+        THRES_CBCR,
+        MERGE_METHOD,
+        SHAPE,
     )
 }

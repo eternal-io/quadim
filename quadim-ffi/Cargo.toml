@@ -1,0 +1,11 @@
+[package]
+name = "quadim-ffi"
+version = "0.0.1"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+image = "0.24.6"
+quadim = { path = ".." }
